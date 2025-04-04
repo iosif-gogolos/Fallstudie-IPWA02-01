@@ -1,0 +1,11 @@
+# Ignore system files
+.DS_Store
+
+# Ignore IDE configuration files
+.metadata/
+.project
+
+# Ignore server and local build files
+Servers/
+apache-tomcat-11.0.4/
+
