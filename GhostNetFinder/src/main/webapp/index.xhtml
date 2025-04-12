@@ -2,28 +2,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
 <h:head>
     <title>GhostNetFinder</title>
-    <!-- Erwartet: /resources/css/styles.css -->
-    <h:outputStylesheet name="css/styles.css"/>
+    <h:outputStylesheet name="css/styles.css" />
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous"/>
-    <link rel="shortcut icon" href="#{request.contextPath}/resources/icons/favicon.ico"/>
 </h:head>
-
 <h:body>
     <f:view>
         <div class="home-screen fade-in">
             <div class="overlap-wrapper">
                 <div class="overlap">
-
-                    <!-- Hintergrundbild (wird auch im CSS als Hintergrund genutzt) -->
                     <h:graphicImage name="images/hintergrund.jpg" styleClass="rectangle" />
-
-                    <!-- HEADER -->
                     <header class="frame-10">
                         <div class="frame-11">
                             <h:link outcome="login.xhtml" styleClass="text-wrapper-6">Anmelden</h:link>
@@ -31,8 +23,6 @@
                         </div>
                         <div class="text-wrapper-8">GhostNetFinder</div>
                     </header>
-                    
-                    <!-- MAIN - Formularbereich -->
                     <main class="frame">
                         <div class="overlap-group slide-up">
                             <div class="frame-wrapper">
@@ -41,57 +31,47 @@
                                         GEBEN SIE DIE GPS-KOORDINATEN EIN<br/>
                                         UM EIN GEISTERNETZ ZU MELDEN
                                     </p>
-                                    
                                     <div class="formular-container">
                                         <h:form>
                                             <div class="text-center mb-3">
-                                                <!-- Logo erwartet unter /resources/icons/logo.png -->
-                                                <h:graphicImage name="icons/logo.png" alt="Logo" styleClass="img-fluid"
-                                                                style="max-width: 80px;" />
+                                                <h:graphicImage name="icons/logo.png" alt="Logo" styleClass="img-fluid" style="max-width: 80px;" />
                                             </div>
-                                            
                                             <p class="text-light text-center mb-3">
                                                 Bitte geben Sie die GPS-Koordinaten ein, um ein Geisternetz zu melden:
                                             </p>
-                                            
                                             <div class="form-group">
                                                 <h:outputLabel for="breitengrad" value="Breitengrad:" />
                                                 <h:inputText id="breitengrad"
                                                              value="#{geisternetzController.breitengrad}"
                                                              styleClass="form-control" required="true"
-                                                             requiredMessage="Breitengrad ist erforderlich"/>
+                                                             requiredMessage="Breitengrad ist erforderlich" />
                                             </div>
-                                            
                                             <div class="form-group">
                                                 <h:outputLabel for="laengengrad" value="Längengrad:" />
                                                 <h:inputText id="laengengrad"
                                                              value="#{geisternetzController.laengengrad}"
                                                              styleClass="form-control" required="true"
-                                                             requiredMessage="Längengrad ist erforderlich"/>
+                                                             requiredMessage="Längengrad ist erforderlich" />
                                             </div>
-                                            
                                             <div class="form-check mb-2">
                                                 <h:selectBooleanCheckbox id="anonym"
                                                                          value="#{geisternetzController.anonym}"
                                                                          styleClass="form-check-input" />
                                                 <h:outputLabel for="anonym" styleClass="form-check-label ml-2"
-                                                               value="Anonym melden"/>
+                                                               value="Anonym melden" />
                                             </div>
-                                            
                                             <div class="form-group">
                                                 <h:outputLabel for="name" value="Name:" />
                                                 <h:inputText id="name"
                                                              value="#{geisternetzController.name}"
                                                              styleClass="form-control" />
                                             </div>
-                                            
                                             <div class="form-group">
                                                 <h:outputLabel for="telefon" value="Telefonnummer:" />
                                                 <h:inputText id="telefon"
                                                              value="#{geisternetzController.telefonnummer}"
                                                              styleClass="form-control" />
                                             </div>
-                                            
                                             <div class="text-center mt-3">
                                                 <h:commandButton value="Geisternetz melden"
                                                                  action="#{geisternetzController.meldeGeisternetz}"
@@ -103,8 +83,6 @@
                             </div>
                         </div>
                     </main>
-                    
-                    <!-- FOOTER -->
                     <footer class="frame-7">
                         <div class="frame-8">
                             <div class="element-sea-shepherd">© 2025 SEA SHEPHERD</div>
@@ -114,10 +92,20 @@
                             </div>
                         </div>
                     </footer>
-                    
                 </div>
             </div>
         </div>
     </f:view>
+    <h:outputScript>
+    // Fix ResizeObserver issues
+    if (typeof ResizeObserver !== 'undefined') {
+        const originalObserve = ResizeObserver.prototype.observe;
+        ResizeObserver.prototype.observe = function (target, options) {
+            if (target && target.nodeType === 1) {
+                return originalObserve.call(this, target, options);
+            }
+        };
+    }
+    </h:outputScript>
 </h:body>
 </html>

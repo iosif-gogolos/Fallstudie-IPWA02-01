@@ -10,7 +10,6 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous"/>
-    <link rel="shortcut icon" href="#{request.contextPath}/resources/icons/favicon.ico"/>
 </h:head>
 
 <h:body>
@@ -37,7 +36,7 @@
                                 <h:form>
                                     <div class="text-center mb-3">
                                         <h:graphicImage name="icons/logo.png" alt="Logo" styleClass="img-fluid"
-                                                        style="max-width: 80px;" />
+                                                       style="max-width: 80px;" />
                                     </div>
                                     
                                     <h:messages styleClass="alert alert-danger" 
@@ -48,35 +47,35 @@
                                     <div class="form-group">
                                         <h:outputLabel for="username" value="Benutzername:" />
                                         <h:inputText id="username" value="#{registrationController.username}"
-                                                     styleClass="form-control" required="true"
-                                                     requiredMessage="Benutzername ist erforderlich"/>
+                                                    styleClass="form-control" required="true"
+                                                    requiredMessage="Benutzername ist erforderlich"/>
                                     </div>
                                     
                                     <div class="form-group">
                                         <h:outputLabel for="email" value="E-Mail:" />
                                         <h:inputText id="email" value="#{registrationController.email}"
-                                                     styleClass="form-control" required="true"
-                                                     requiredMessage="E-Mail ist erforderlich"/>
+                                                    styleClass="form-control" required="true"
+                                                    requiredMessage="E-Mail ist erforderlich"/>
                                     </div>
                                     
                                     <div class="form-group">
                                         <h:outputLabel for="password" value="Passwort:" />
                                         <h:inputSecret id="password" value="#{registrationController.password}"
-                                                       styleClass="form-control" required="true"
-                                                       requiredMessage="Passwort ist erforderlich"/>
+                                                      styleClass="form-control" required="true"
+                                                      requiredMessage="Passwort ist erforderlich"/>
                                     </div>
                                     
                                     <div class="form-group">
                                         <h:outputLabel for="confirmPassword" value="Passwort bestätigen:" />
                                         <h:inputSecret id="confirmPassword" value="#{registrationController.confirmPassword}"
-                                                       styleClass="form-control" required="true"
-                                                       requiredMessage="Passwort-Bestätigung ist erforderlich"/>
+                                                      styleClass="form-control" required="true"
+                                                      requiredMessage="Passwort-Bestätigung ist erforderlich"/>
                                     </div>
                                     
                                     <div class="text-center mt-3">
                                         <h:commandButton value="Registrieren"
-                                                         action="#{registrationController.register}"
-                                                         styleClass="btn btn-primary btn-block" />
+                                                        action="#{registrationController.register}"
+                                                        styleClass="btn btn-primary btn-block" />
                                     </div>
                                 </h:form>
                             </div>
