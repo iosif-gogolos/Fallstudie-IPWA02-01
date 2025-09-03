@@ -1,140 +1,24 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-
-<h:head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GhostNetFinder</title>
-
-  <!-- JSF-managed CSS resource -->
-  <h:outputStylesheet library="css" name="styles.css" />
-
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
-        crossorigin="anonymous" />
-
-  <!-- Leaflet CSS with SRI -->
-  <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-        integrity="sha384-o/2yZuJZWGJ4s/adjxVW71R+EO/LyCwdQfP5UWSgX/w87iiTXuvDZaejd3TsN7mf"
-        crossorigin="anonymous" />
-
-  <!-- Inline background style with JSF resource -->
-  <style type="text/css">
-    body {
-      background-image: url("#{resource['images/hintergrund.jpg']}");
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-attachment: fixed;
-    }
-  </style>
-
-  <link rel="shortcut icon" href="#" />
-</h:head>
-
+      xmlns:h="http://xmlns.jakarta.ee/jsf/html"
+      xmlns:f="http://xmlns.jakarta.ee/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 <h:body>
-  <div class="container mt-5 p-4 bg-white bg-opacity-75 rounded">
-    <header class="d-flex justify-content-between align-items-center mb-4">
-      <h1>GhostNetFinder</h1>
-      <div class="d-flex gap-2">
-        <h:link value="Login" outcome="login.xhtml" styleClass="btn btn-primary" />
-        <h:link value="Register" outcome="register.xhtml" styleClass="btn btn-secondary" />
-      </div>
-    </header>
+  <h:form>
+    <p:inputNumber value="#{geisternetzController.lat}" decimalPlaces="6" placeholder="Breite (lat)"/>
+    <p:inputNumber value="#{geisternetzController.lng}" decimalPlaces="6" placeholder="Länge (lng)"/>
+    <p:inputTextarea value="#{geisternetzController.beschreibung}" rows="3" placeholder="Beschreibung"/>
+    <!-- Auswahl der berichtenden Person, z. B. via Dropdown (notwendig in echtem Setup) -->
+    <p:inputNumber value="#{geisternetzController.berichtendePersonId}" placeholder="ID berichtende Person"/>
+    <p:inputNumber value="#{geisternetzController.bergendePersonId}" placeholder="ID bergende Person (optional)"/>
+    <p:commandButton value="Geisternetz melden" action="#{geisternetzController.meldeGeisternetz}"/>
+  </h:form>
 
-    <!-- Map Section -->
-    <div class="map-container mt-4 mb-4">
-      <p>Click the map to select a ghost net location. Coordinates will populate the form below.</p>
-      <div id="map" class="w-100" style="height:500px;"></div>
-    </div>
-
-    <!-- Reporting Form -->
-    <h:form id="reportForm" class="mt-4">
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <h:outputLabel for="breitengrad" value="Breitengrad:" />
-          <h:inputText id="breitengrad"
-                       value="#{geisternetzController.breitengrad}"
-                       required="true"
-                       styleClass="form-control"
-                       placeholder="z.B. 51.505" />
-        </div>
-        <div class="form-group col-md-6">
-          <h:outputLabel for="laengengrad" value="Längengrad:" />
-          <h:inputText id="laengengrad"
-                       value="#{geisternetzController.laengengrad}"
-                       required="true"
-                       styleClass="form-control"
-                       placeholder="z.B. -0.09" />
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <h:outputLabel for="groesse" value="Geschätzte Größe (m²):" />
-          <h:inputText id="groesse"
-                       value="#{geisternetzController.groesse}"
-                       required="true"
-                       styleClass="form-control"
-                       placeholder="z.B. 10.5" />
-        </div>
-        <div class="form-group col-md-6">
-          <h:outputLabel for="status" value="Status:" />
-          <h:selectOneMenu id="status"
-                           value="#{geisternetzController.status}"
-                           styleClass="form-control">
-            <f:selectItems value="#{geisternetzController.statusOptions}" />
-          </h:selectOneMenu>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary">Geisternetz melden</button>
-    </h:form>
-  </div>
-
-  <!-- Leaflet JS with SRI -->
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-          integrity="sha384-okbbMvvx/qfQkmiQKfd5VifbKZ/W8p1qIsWvE1ROPUfHWsDcC8/BnHohF7vPg2T6"
-          crossorigin="anonymous"></script>
-
-  <!-- Safe JavaScript blocks using CDATA -->
-  <script type="text/javascript"><![CDATA[
-    // Monkey-patch to guard DomUtil.removeClass
-    if (window.L && L.DomUtil && typeof L.DomUtil.removeClass === 'function') {
-      (function() {
-        const orig = L.DomUtil.removeClass;
-        L.DomUtil.removeClass = function(el, name) {
-          if (!el || !el.classList) return;
-          return orig.call(this, el, name);
-        };
-      })();
-    }
-  ]]></script>
-
-  <script type="text/javascript"><![CDATA[
-    document.addEventListener('DOMContentLoaded', function() {
-      const mapEl = document.getElementById('map');
-      if (!mapEl) return;
-
-      const map = L.map('map').setView([51.505, -0.09], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(map);
-
-      let marker = null;
-      map.on('click', function(e) {
-        if (marker) map.removeLayer(marker);
-        marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
-        const lat = document.getElementById('breitengrad');
-        const lng = document.getElementById('laengengrad');
-        if (lat) lat.value = e.latlng.lat;
-        if (lng) lng.value = e.latlng.lng;
-      });
-    });
-  ]]></script>
+  <h:panelGroup>
+    <h3>Gemeldete Geisternetze</h3>
+    <ui:repeat value="#{geisternetzController.alleGeisternetze}" var="g"
+               xmlns:ui="http://xmlns.jakarta.ee/jsf/facelets">
+      <p>##{g.id} – #{g.status} – (#{g.koordinate.latitude}, #{g.koordinate.longitude})</p>
+    </ui:repeat>
+  </h:panelGroup>
 </h:body>
 </html>
