@@ -1,57 +1,50 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jakarta.ee/jsf/html"
-	  xmlns:f="http://xmlns.jakarta.ee/jsf/core">
-	  
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 <h:head>
-    <title>Login</title>
-    <link rel="stylesheet" type="text/css" href="#{resource['css:styles.css']}
-']}" />
+    <title>Anmeldung</title>
+    <h:outputStylesheet library="css" name="globals.css"/>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <style>
+        .has-bg {
+            background: url("#{resource['images:background.jpg']}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .topbar {
+            background: rgba(7,62,115,.98);
+            color: #fff; padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand { font-weight: 800; font-size: 22px; }
+        .nav-actions { display:flex; gap:16px; align-items:center; }
+    </style>
 </h:head>
-<h:body>
-    <h:panelGroup layout="block" styleClass="background"/>
-    <h:panelGroup layout="block" styleClass="centering">
-        <h:form styleClass="my-form">
-            <h:panelGroup layout="block" styleClass="login-welcome-row">
-                <h:graphicImage value="resources/images/hintergrund.jpg" alt="Hintergrund-Bild" styleClass="login-welcome" />
-                <h1>Login</h1>
-            </h:panelGroup>
+<h:body class="has-bg">
+    <p:growl id="msgs" showDetail="true" life="3500" autoUpdate="true"/>
+    <div class="centering">
+        <div class="my-form" style="max-width:560px;background:rgba(255,255,255,.95);padding:24px;border-radius:8px;">
+            <h2 style="margin-bottom:8px;">Anmelden</h2>
+            <p style="opacity:.85;margin-bottom:12px;">Melde dich mit deiner <b>Personen-ID</b> an. Die Rolle wird anhand deines Typs (Berichtende/Bergende) erkannt.</p>
 
-            <!-- Formular-->
-            <div class="text-field">
-                <h:outputLabel for="username" value="Email:" />
-                <h:inputText id="username"
-                             value="#{loginController.username}"
-                             type="email"
-                             required="true"
-                             requiredMessage="Bitte Email eingeben"
-                             placeholder="Your Email"
-                             styleClass="email-input" />
-                <h:graphicImage value="resources/images/email.svg" alt="Email Icon" title="Email Icon" />
+            <h:form id="loginForm">
+                <p:panel>
+                    <h:panelGrid columns="2" columnClasses="label,value">
+                        <h:outputLabel for="pid" value="Personen-ID:"/>
+                        <p:inputNumber id="pid" value="#{loginController.loginPersonId}" decimalPlaces="0" required="true"/>
+
+                        <h:outputLabel/>
+                        <p:commandButton value="Anmelden" icon="pi pi-sign-in"
+                                         action="#{loginController.login}" process="@form"
+                                         oncomplete="window.location='index.xhtml'"/>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+
+            <div class="my-form__signup" style="margin-top:10px;">
+                Noch kein Konto? <h:link outcome="register" value="Jetzt registrieren"/>
             </div>
-
-            <div class="text-field">
-                <h:outputLabel for="password" value="Password:" />
-                <h:inputSecret id="password"
-                               value="#{loginController.password}"
-                               required="true"
-                               requiredMessage="Bitte Passwort eingeben"
-                               placeholder="Your Password"
-                               styleClass="password-input" />
-                <h:graphicImage value="resources/images/password.svg" alt="Password Icon" title="Password Icon" />
-            </div>
-
-            <h:commandButton value="Login"
-                             action="#{loginController.login}"
-                             styleClass="my-form__button" />
-
-            <div class="my-form__actions">
-                <div class="my-form__row"></div>
-                <div class="my-form__signup">
-                    <h:link outcome="register" value="Create Account" title="Create Account" />
-                </div>
-            </div>
-        </h:form>
-    </h:panelGroup>
+        </div>
+    </div>
 </h:body>
 </html>

@@ -2,113 +2,165 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
-    <h:head>
-        <title>Geisternetzerfassung</title>
-        <h:outputStylesheet name="globals.css" library="css" />
-        <h:outputStylesheet name="styles.css" library="css" />
-        <style>
-            .has-bg {
-                background: url("#{resource['images:background.jpg']}") no-repeat center center fixed;
-                background-size: cover;
-            }
-        </style>
-    </h:head>
-    <h:body styleClass="has-bg">
-        <!-- Panel 1: Meldeformular -->
-        <h:form id="reportForm">
+      
+      
+
+<h:head>
+    <title>GhostNetFinder</title>
+    <h:outputStylesheet library="css" name="globals.css"/>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <style>
+        .has-bg {
+            background: url("#{resource['images:background.jpg']}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .topbar {
+            background: rgba(7,62,115,.98);
+            color: #fff; padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand { font-weight: 800; font-size: 22px; }
+        .nav-actions { display:flex; gap:16px; align-items:center; }
+    </style>
+</h:head>
+
+<h:body styleClass="has-bg">
+    <p:growl id="msgs" showDetail="true" life="3500" autoUpdate="true"/>
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="brand">GhostNetFinder</div>
+        <div class="nav-actions">
+           <h:panelGroup rendered="#{not loginController.loggedIn}" style="color: white;">
+			    <h:link outcome="login" value="Anmelden" style="color: white;"/>
+			    <span style="color: white;">·</span>
+			    <h:link outcome="register" value="Registrieren" style="color: white;"/>
+			</h:panelGroup>
+
+            <h:panelGroup rendered="#{loginController.loggedIn}">
+                <h:outputText value="Willkommen, #{loginController.displayName}"/>
+                <h:form style="display:inline;">
+                    <p:commandButton value="Logout" icon="pi pi-sign-out" styleClass="p-button-text p-button-sm"
+                                     action="#{loginController.logout}" process="@this"
+                                     update=":msgs"
+                                     oncomplete="window.location='index.xhtml'"/>
+                </h:form>
+            </h:panelGroup>
+        </div>
+    </div>
+
+    <div class="centering">
+        <div class="my-form" style="max-width:980px; width:100%;">
+
+            <!-- PANEL: Meldeformular (für alle sichtbar; wenn Berichtende eingeloggt, ID wird eingefüllt) -->
             <p:panel header="Geisternetz melden">
-                <h:panelGrid columns="2" styleClass="form-grid" columnClasses="label-column,value-column">
-                    <h:outputLabel for="breitengrad" value="Breitengrad:" />
-                    <p:inputText id="breitengrad" value="#{geisternetzController.breitengrad}" required="true" label="Breitengrad" />
+                <h:form id="reportForm">
+                    <h:panelGrid columns="2" columnClasses="label,value" styleClass="form-grid">
+                        <h:outputLabel for="breitengrad" value="Breitengrad:"/>
+                        <p:inputText id="breitengrad" value="#{geisternetzController.breitengrad}" required="true" label="Breitengrad"/>
 
-                    <h:outputLabel for="laengengrad" value="Längengrad:" />
-                    <p:inputText id="laengengrad" value="#{geisternetzController.laengengrad}" required="true" label="Längengrad" />
+                        <h:outputLabel for="laengengrad" value="Längengrad:"/>
+                        <p:inputText id="laengengrad" value="#{geisternetzController.laengengrad}" required="true" label="Längengrad"/>
 
-                    <h:outputLabel for="groesse" value="Geschätzte Größe:" />
-                    <p:inputText id="groesse" value="#{geisternetzController.geschaetzteGroesse}" required="true" label="Geschätzte Größe" />
+                        <h:outputLabel for="groesse" value="Geschätzte Größe (m²):"/>
+                        <p:inputText id="groesse" value="#{geisternetzController.geschaetzteGroesse}" required="true" label="Größe"/>
 
-                    <h:outputLabel for="beschreibung" value="Beschreibung:" />
-                    <p:inputTextarea id="beschreibung" value="#{geisternetzController.beschreibung}" autoResize="false" rows="3" cols="30" />
+                        <h:outputLabel for="beschreibung" value="Beschreibung:"/>
+                        <p:inputTextarea id="beschreibung" value="#{geisternetzController.beschreibung}" autoResize="false" rows="3" cols="30"/>
 
-                    <h:outputLabel for="melder" value="ID der meldenden Person:" />
-                    <p:inputText id="melder" value="#{geisternetzController.berichtendePersonId}" required="true" label="Meldende Person" />
-                </h:panelGrid>
-                <f:facet name="footer">
-                    <p:commandButton value="Melden" icon="pi pi-check"
-                                     action="#{geisternetzController.meldeGeisternetz()}"
-                                     process="@form" update=":listForm" />
-                </f:facet>
-            </p:panel>
-        </h:form>
+                        <h:outputLabel for="melder" value="ID der meldenden Person:" rendered="#{not loginController.berichtende}"/>
+                        <p:inputText id="melder" value="#{geisternetzController.berichtendePersonId}"
+                                     rendered="#{not loginController.berichtende}" required="true" label="Meldende Person"/>
 
-        <!-- Panel 2: Tabelle aller Geisternetze mit Aktionen -->
-        <h:form id="listForm">
-            <p:panel header="Alle Geisternetze">
-                <!-- Eingabefelder für Aktionen -->
-                <h:panelGrid columns="4" styleClass="action-inputs"
-                             columnClasses="label-column,value-column,label-column,value-column">
-                    <h:outputLabel for="bergendePerson" value="Bergende Person ID:" />
-                    <p:inputText id="bergendePerson" value="#{geisternetzController.bergendePersonId}" />
+                        <!-- Wenn eine BerichtendePerson eingeloggt ist, setze automatisch deren ID -->
+                        <h:panelGroup rendered="#{loginController.berichtende}">
+                            <h:outputLabel value="Meldende Person:"/>
+                            <h:outputText value="#{loginController.displayName} (ID #{loginController.personId})"/>
+                            <h:inputHidden value="#{geisternetzController.berichtendePersonId}"/>
+                            <f:event type="preRenderComponent"
+                                     listener="#{loginController.syncBerichtendeId(geisternetzController)}"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
 
-                    <h:outputLabel for="personId" value="Person ID:" />
-                    <p:inputText id="personId" value="#{geisternetzController.beliebigePersonId}" />
-                </h:panelGrid>
-
-                <p:dataTable id="netsTable" var="netz" value="#{geisternetzController.alle}"
-                             emptyMessage="Keine Geisternetze vorhanden."
-                             responsiveLayout="scroll">
-                    <p:column headerText="ID">
-                        <h:outputText value="#{netz.id}" />
-                    </p:column>
-                    <p:column headerText="Breitengrad">
-                        <h:outputText value="#{netz.breitengrad}" />
-                    </p:column>
-                    <p:column headerText="Längengrad">
-                        <h:outputText value="#{netz.laengengrad}" />
-                    </p:column>
-                    <p:column headerText="Größe (geschätzt)">
-                        <h:outputText value="#{netz.geschaetzteGroesse}" />
-                    </p:column>
-                    <p:column headerText="Beschreibung">
-                        <h:outputText value="#{netz.beschreibung}" />
-                    </p:column>
-                    <p:column headerText="Meldender (ID)">
-                        <h:outputText value="#{netz.berichtendePersonId}" />
-                    </p:column>
-                    <!-- Optional: Falls vorhanden, hier Bergende Person oder Status anzeigen
-                    <p:column headerText="Bergende Person (ID)">
-                        <h:outputText value="#{netz.bergendePersonId}" />
-                    </p:column>
-                    -->
-                    <p:column headerText="Aktionen">
-                        <p:commandButton value="Zur Bergung eintragen" icon="pi pi-flag"
-                                         action="#{geisternetzController.eintragenZurBergung(netz.id)}"
-                                         process="@this bergendePerson" update="@form"
-                                         style="margin-right:5px;"
-                                         title="Netz für Bergung vormerken" />
-                        <p:commandButton value="Als geborgen melden" icon="pi pi-check-square"
-                                         action="#{geisternetzController.alsGeborgenMelden(netz.id)}"
-                                         process="@this personId" update="@form"
-                                         style="margin-right:5px;"
-                                         title="Netz als geborgen markieren" />
-                        <p:commandButton value="Als verschollen melden" icon="pi pi-exclamation-triangle"
-                                         action="#{geisternetzController.alsVerschollenMelden(netz.id)}"
-                                         process="@this personId" update="@form"
-                                         title="Netz als verschollen markieren" />
-                    </p:column>
-                </p:dataTable>
+                    <div class="my-form__actions">
+                        <p:commandButton value="Melden" icon="pi pi-check"
+                                         action="#{geisternetzController.meldeGeisternetz}"
+                                         process="@form" update=":listForm :msgs"/>
+                    </div>
+                </h:form>
             </p:panel>
 
-            <!-- Panel 3: Karte mit Markern (optional) -->
-            <script type="text/javascript"
-                    src="https://maps.google.com/maps/api/js?key=IHRE_API_KEY&amp;sensor=false"></script>
-            <p:panel header="Karte" rendered="#{not empty geisternetzController.alle}">
-                <p:gmap id="map" center="0,0" zoom="2" type="ROADMAP"
-                        model="#{addMarkersView.emptyModel}"
-                        style="width:100%;height:400px" />
+            <!-- PANEL: Tabelle & Aktionen (Aktionen nur für Bergende sichtbar) -->
+            <p:panel header="Alle Geisternetze" style="margin-top:16px;">
+                <h:form id="listForm">
+
+                    <!-- Aktions-Kontext: IDs nur anzeigen, wenn kein Bergender eingeloggt -->
+                    <h:panelGrid columns="4" styleClass="action-inputs"
+                                 columnClasses="label,value,label,value"
+                                 rendered="#{not loginController.bergende}">
+                        <h:outputLabel for="bergendePerson" value="Bergende Person ID:"/>
+                        <p:inputText id="bergendePerson" value="#{geisternetzController.bergendePersonId}"/>
+
+                        <h:outputLabel for="personId" value="Person ID (für 'geborgen/verschollen'):"/>
+                        <p:inputText id="personId" value="#{geisternetzController.beliebigePersonId}"/>
+                    </h:panelGrid>
+
+                    <!-- Wenn Bergende eingeloggt: IDs automatisch setzen -->
+                    <h:panelGroup rendered="#{loginController.bergende}">
+                        <h:outputText value="Angemeldet als Bergende Person: #{loginController.displayName} (ID #{loginController.personId})"/>
+                        <f:event type="preRenderComponent"
+                                 listener="#{loginController.syncBergendeId(geisternetzController)}"/>
+                    </h:panelGroup>
+
+                    <p:dataTable id="netsTable" var="netz" value="#{geisternetzController.alle}"
+                                 emptyMessage="Keine Geisternetze vorhanden." responsiveLayout="scroll"
+                                 rows="10" paginator="true" paginatorPosition="bottom">
+                        <p:column headerText="ID"><h:outputText value="#{netz.id}"/></p:column>
+                        <p:column headerText="Standort">
+                            <h:outputText value="#{netz.standort.breitengrad}"/>, <h:outputText value="#{netz.standort.laengengrad}"/>
+                        </p:column>
+                        <p:column headerText="Größe (m²)"><h:outputText value="#{netz.geschaetzteGroesse}"/></p:column>
+                        <p:column headerText="Status"><h:outputText value="#{netz.status}"/></p:column>
+                        <p:column headerText="Bergende">
+                            <h:outputText value="#{netz.bergendePerson != null ? netz.bergendePerson.id : '-'}"/>
+                        </p:column>
+                        <p:column headerText="Aktionen">
+                            <!-- Zur Bergung eintragen -->
+                            <p:commandButton value="Bergung ankündigen" icon="pi pi-flag"
+                                             rendered="#{loginController.bergende}"
+                                             action="#{geisternetzController.eintragenZurBergung(netz.id)}"
+                                             process="@this" update="netsTable :msgs"
+                                             style="margin-right:6px;"/>
+
+                            <!-- Als geborgen melden -->
+                            <p:commandButton value="Als geborgen melden" icon="pi pi-check-square"
+                                             rendered="#{loginController.bergende}"
+                                             action="#{geisternetzController.alsGeborgenMelden(netz.id)}"
+                                             process="@this" update="netsTable :msgs"
+                                             style="margin-right:6px;"/>
+
+                            <!-- Als verschollen melden (für alle nicht-anonym) -->
+                            <p:commandButton value="Als verschollen melden" icon="pi pi-exclamation-triangle"
+                                             action="#{geisternetzController.alsVerschollenMelden(netz.id)}"
+                                             process="@this" update="netsTable :msgs"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
             </p:panel>
-        </h:form>
-    </h:body>
+
+            <!-- Karte vorerst auskommentiert da ich keinen Maps Key -->
+			<!--
+			<p:panel header="Karte (nicht geborgene Netze)" style="margin-top:16px;">
+			  <h:form id="mapForm">
+			    <p:gmap id="map" type="ROADMAP" center="0,0" zoom="2"
+			            model="#{addMarkersView.emptyModel}" style="width:100%;height:380px"/>
+			  </h:form>
+			</p:panel>
+			-->
+			
+
+        </div>
+    </div>
+</h:body>
 </html>

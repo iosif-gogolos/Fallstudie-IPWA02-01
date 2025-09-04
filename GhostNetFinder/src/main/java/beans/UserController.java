@@ -17,6 +17,7 @@ public class UserController {
     private String name;
     private String telefon;
     private boolean anonym; // nur für Berichtende
+    private String geisternetzData; // New property
 
     // Registrierung für meldende Person (anonym optional)
     public String registriereBerichtende() {
@@ -37,4 +38,6 @@ public class UserController {
     public void setTelefon(String telefon) { this.telefon = telefon; }
     public boolean isAnonym() { return anonym; }
     public void setAnonym(boolean anonym) { this.anonym = anonym; }
+    public String getGeisternetzData() { return geisternetzData; } // Getter for geisternetzData
+    public void setGeisternetzData(String geisternetzData) { this.geisternetzData = geisternetzData; } // Setter for geisternetzData
 }

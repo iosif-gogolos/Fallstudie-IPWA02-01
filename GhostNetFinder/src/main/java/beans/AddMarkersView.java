@@ -27,14 +27,39 @@ public class AddMarkersView implements Serializable {
         emptyModel = new DefaultMapModel();
     }
 
-    // Getter/Setter wie gehabt…
+    /* ====== Getter/Setter – wichtig für JSF EL ====== */
+    public MapModel getEmptyModel() {
+        return emptyModel;
+    }
 
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    /* ====== Beispiel: Marker hinzufügen (optional) ====== */
     public void addMarker() {
         Marker marker = new Marker(new LatLng(lat, lng), title);
         emptyModel.addOverlay(marker);
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        "Marker Added", "Lat: " + lat + ", Lng: " + lng));
+                        "Marker hinzugefügt", "Lat: " + lat + ", Lng: " + lng));
         resetFields();
     }
 

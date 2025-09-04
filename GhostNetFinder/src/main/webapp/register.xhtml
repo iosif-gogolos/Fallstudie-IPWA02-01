@@ -1,24 +1,83 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jakarta.ee/jsf/html"
-      xmlns:f="http://xmlns.jakarta.ee/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui">
-<h:body>
-  <h:form>
-    <h2>Berichtende Person registrieren</h2>
-    <p:inputText value="#{userController.neueBerichtende.vorname}" placeholder="Vorname"/>
-    <p:inputText value="#{userController.neueBerichtende.nachname}" placeholder="Nachname"/>
-    <p:inputText value="#{userController.neueBerichtende.email}" placeholder="E-Mail"/>
-    <p:inputText value="#{userController.neueBerichtende.telefon}" placeholder="Telefon"/>
-    <p:commandButton value="Registrieren" action="#{userController.registriereBerichtende}"/>
-  </h:form>
+<h:head>
+    <title>Registrierung</title>
+    <h:outputStylesheet library="css" name="globals.css"/>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <style>
+        .has-bg {
+            background: url("#{resource['images:background.jpg']}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .topbar {
+            background: rgba(7,62,115,.98);
+            color: #fff; padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand { font-weight: 800; font-size: 22px; }
+        .nav-actions { display:flex; gap:16px; align-items:center; }
+    </style>
+</h:head>
+<h:body class="has-bg">
+    <p:growl id="msgs" showDetail="true" life="3500" autoUpdate="true"/>
+    <div class="centering">
+        <div class="my-form" style="max-width:680px;background:rgba(255,255,255,.95);padding:24px;border-radius:8px;">
+            <h2 style="margin-bottom:8px;">Registrieren</h2>
 
-  <h:form>
-    <h2>Bergende Person registrieren</h2>
-    <p:inputText value="#{userController.neueBergende.vorname}" placeholder="Vorname"/>
-    <p:inputText value="#{userController.neueBergende.nachname}" placeholder="Nachname"/>
-    <p:inputText value="#{userController.neueBergende.email}" placeholder="E-Mail"/>
-    <p:inputText value="#{userController.neueBergende.telefon}" placeholder="Telefon"/>
-    <p:commandButton value="Registrieren" action="#{userController.registriereBergende}"/>
-  </h:form>
+            <p:tabView>
+                <!-- Berichtende Person -->
+                <p:tab title="Meldende Person">
+				    <h:form id="regReport">
+				        <h:panelGrid columns="2" columnClasses="label,value">
+				            <h:outputLabel for="nameR" value="Name/Email:"/>
+				            <p:inputText id="nameR" value="#{userController.name}" required="true"/>
+				
+				            <h:outputLabel for="telR" value="Telefon:"/>
+				            <p:inputText id="telR" value="#{userController.telefon}" rendered="#{not userController.anonym}"/>
+				
+				            <h:outputLabel for="anon" value="Anonym melden?"/>
+				            <p:selectBooleanCheckbox id="anon" value="#{userController.anonym}" />
+				
+				            <!-- Fields for Geisternetz (always visible) -->
+				            <h:outputLabel for="netzData" value="Geisternetz-Daten:"/>
+				            <p:inputText id="netzData" value="#{userController.geisternetzData}" required="true"/>
+				
+				            <!-- Submit button -->
+				            <h:outputLabel/>
+				            <p:commandButton value="Registrieren" icon="pi pi-user-plus"
+				                             action="#{userController.registriereBerichtende}"
+				                             process="@form" update=":msgs"
+				                             oncomplete="window.location='login.xhtml'"/>
+				        </h:panelGrid>
+				    </h:form>
+				</p:tab>
+
+                <!-- Bergende Person -->
+                <p:tab title="Bergende Person">
+                    <h:form id="regSalvor">
+                        <h:panelGrid columns="2" columnClasses="label,value">
+                            <h:outputLabel for="nameB" value="Name/Email:"/>
+                            <p:inputText id="nameB" value="#{userController.name}" required="true"/>
+
+                            <h:outputLabel for="telB" value="Telefon (Pflicht):"/>
+                            <p:inputText id="telB" value="#{userController.telefon}" required="true"/>
+
+                            <h:outputLabel/>
+                            <p:commandButton value="Registrieren" icon="pi pi-user-plus"
+                                             action="#{userController.registriereBergende}"
+                                             process="@form" update=":msgs"
+                                             oncomplete="window.location='login.xhtml'"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:tab>
+            </p:tabView>
+
+            <div class="my-form__signup" style="margin-top:10px;">
+                Bereits registriert? <h:link outcome="login" value="Zum Login"/>
+            </div>
+        </div>
+    </div>
 </h:body>
 </html>
