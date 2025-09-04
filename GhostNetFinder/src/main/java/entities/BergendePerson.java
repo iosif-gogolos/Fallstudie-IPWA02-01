@@ -1,33 +1,24 @@
 package entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-public class BergendePerson extends Person{
-	
-	/* Relation:
-	 * Eine bergende Person kann mehrere Geisternetze bergen
-	 * Ein Geisternetz ist höchtens einer Person zugeordnet
-	 */
-	@OneToMany(mappedBy = "bergendePerson", cascade = CascadeType.ALL /* orphanRemoval = true*/)
-	private ArrayList<Geisternetz> zugeordneteNetze = new ArrayList<>();
-	
-	// Default-Kostruktor -> notwedig für JPA
-	public BergendePerson() {
-	}
-	
-	public BergendePerson(String name, String telefonNummer) {
-		super(name, telefonNummer);
-		this.zugeordneteNetze = new ArrayList<>();
-	}
-	
-	// Getter- und Setter-Methoden
-	public ArrayList<Geisternetz> getGeisternetze() {
-		return zugeordneteNetze;
-	}
-	
-	public void setGeisternetze(ArrayList<Geisternetz> zugeordneteNetze) {
-		this.zugeordneteNetze = zugeordneteNetze;
-	}
+public class BergendePerson extends Person {
+
+    @OneToMany(mappedBy = "bergendePerson")
+    private List<Geisternetz> zugeordneteNetze = new ArrayList<>();
+
+    public BergendePerson() {
+        // no-args
+    }
+
+    public List<Geisternetz> getZugeordneteNetze() {
+        return zugeordneteNetze;
+    }
+    public void setZugeordneteNetze(List<Geisternetz> zugeordneteNetze) {
+        this.zugeordneteNetze = zugeordneteNetze;
+    }
 }

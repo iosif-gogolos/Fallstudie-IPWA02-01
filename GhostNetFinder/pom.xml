@@ -2,70 +2,103 @@
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-        http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+        http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        
   <modelVersion>4.0.0</modelVersion>
   <groupId>SeaShepherd</groupId>
-  <artifactId>GhostNetFinder</artifactId>
+  <artifactId>ghostnetfinder</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <failOnMissingWebXml>false</failOnMissingWebXml>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+
+    <!-- Versionen zentral -->
+    <jakarta.faces.version>4.0.11</jakarta.faces.version>        <!-- stabile 4.0.x -->
+    <jakarta.servlet.version>6.0.0</jakarta.servlet.version>     <!-- Tomcat 11 -->
+    <jakarta.cdi.api.version>4.0.1</jakarta.cdi.api.version>
+    <weld.servlet.version>5.1.6.Final</weld.servlet.version>
+    <jpa.version>3.1.0</jpa.version>
+    <hibernate.version>6.6.15.Final</hibernate.version>
+    <primefaces.version>13.0.7</primefaces.version>              <!-- oder aktueller 13.x -->
   </properties>
-    
+
   <build>
+    <finalName>ghostnetfinder</finalName> <!-- setzt Kontextpfad auf /ghostnetfinder -->
     <plugins>
-	  <plugin>
-	    <groupId>org.apache.maven.plugins</groupId>
-	    <artifactId>maven-war-plugin</artifactId>
-	    <version>3.3.1</version>
-		</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.2</version>
+      </plugin>
     </plugins>
   </build>
 
   <dependencies>
-    <dependency>
-  	  <groupId>Jakarta.persistence</groupId>
-  	  <artifactId>jakarta.persistence-api</artifactId>
-  	  <version>3.0.0</version>
-      </dependency>
-    <dependency>
-      <groupId>jakarta.transaction</groupId>
-      <artifactId>jakarta.transaction-api</artifactId>
-      <version>2.0.0</version>
-    </dependency>
-
+    <!-- Servlet API: von Tomcat bereitgestellt -->
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
-      <version>5.0.0</version>
+      <version>${jakarta.servlet.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Jakarta Faces (Mojarra 4.x) -->
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>jakarta.faces</artifactId>
-      <version>4.0.0-M1</version>
+      <version>${jakarta.faces.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>jakarta.inject</groupId>
-      <artifactId>jakarta.inject-api</artifactId>
-      <version>2.0.0</version>
-    </dependency>
-
+    <!-- CDI API + Weld (für Tomcat) -->
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
-      <version>3.0.0</version>
+      <version>${jakarta.cdi.api.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
-      <artifactId>weld-servlet-core</artifactId>
-      <version>4.0.2.Final</version>
+      <artifactId>weld-servlet-shaded</artifactId>
+      <version>${weld.servlet.version}</version>
     </dependency>
+
+    <!-- JPA API + Hibernate ORM -->
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>${jpa.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+
+    <dependency>
+	  <groupId>org.primefaces</groupId>
+	  <artifactId>primefaces</artifactId>
+	  <version>13.0.7</version> <!-- z.B. -->
+	  <classifier>jakarta</classifier>
+	</dependency>
+
+    <!-- DB Treiber -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.28</version>
+    </dependency>
+    
+    <!-- Portable Lösung zum Testen-->
+    <dependency>
+	  <groupId>com.h2database</groupId>
+	  <artifactId>h2</artifactId>
+	  <version>2.2.224</version>
+	  <scope>runtime</scope>
+	</dependency>
+    
+  
   </dependencies>
 </project>

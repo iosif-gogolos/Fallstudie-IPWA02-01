@@ -1,50 +1,33 @@
 package entities;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "person_typ", discriminatorType = DiscriminatorType.STRING)
+@Table(name = "person")
+public abstract class Person implements Serializable {
 
-public abstract class Person {
-	// Attribute
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String name;
-	
-	// Für registrierte Benutzer, für meldende = Null
-	private String telefonNummer;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	
-	// Default-Kostruktor -> notwedig für JPA
-	public Person() {
-	}
-	
-	public Person(String name, String telefonNummer) {
-		this.name = name;
-		this.telefonNummer = telefonNummer;
-	
-	}
-	
-	// Getter- und Setter-Methoden
-	public Long getId() {
-		return id;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getTelefonNummer() {
-		return telefonNummer;
-	}
-	
-	public void setTelefonNummer(String telefonNummer) {
-		this.telefonNummer = telefonNummer;
-	}
+    @Column(nullable = false) private String vorname;
+    @Column(nullable = false) private String nachname;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    private String telefon;
+
+    // --- Getter/Setter ---
+    public Long getId() { return id; }
+    public String getVorname() { return vorname; }
+    public void setVorname(String vorname) { this.vorname = vorname; }
+    public String getNachname() { return nachname; }
+    public void setNachname(String nachname) { this.nachname = nachname; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getTelefon() { return telefon; }
+    public void setTelefon(String telefon) { this.telefon = telefon; }
 }

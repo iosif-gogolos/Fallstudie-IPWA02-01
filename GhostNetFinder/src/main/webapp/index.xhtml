@@ -1,24 +1,71 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jakarta.ee/jsf/html"
       xmlns:f="http://xmlns.jakarta.ee/jsf/core"
+      xmlns:ui="http://xmlns.jakarta.ee/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
-<h:body>
-  <h:form>
-    <p:inputNumber value="#{geisternetzController.lat}" decimalPlaces="6" placeholder="Breite (lat)"/>
-    <p:inputNumber value="#{geisternetzController.lng}" decimalPlaces="6" placeholder="Länge (lng)"/>
-    <p:inputTextarea value="#{geisternetzController.beschreibung}" rows="3" placeholder="Beschreibung"/>
-    <!-- Auswahl der berichtenden Person, z. B. via Dropdown (notwendig in echtem Setup) -->
-    <p:inputNumber value="#{geisternetzController.berichtendePersonId}" placeholder="ID berichtende Person"/>
-    <p:inputNumber value="#{geisternetzController.bergendePersonId}" placeholder="ID bergende Person (optional)"/>
-    <p:commandButton value="Geisternetz melden" action="#{geisternetzController.meldeGeisternetz}"/>
-  </h:form>
 
-  <h:panelGroup>
-    <h3>Gemeldete Geisternetze</h3>
-    <ui:repeat value="#{geisternetzController.alleGeisternetze}" var="g"
-               xmlns:ui="http://xmlns.jakarta.ee/jsf/facelets">
-      <p>##{g.id} – #{g.status} – (#{g.koordinate.latitude}, #{g.koordinate.longitude})</p>
-    </ui:repeat>
-  </h:panelGroup>
+<h:head>
+    <title>GhostNetFinder</title>
+
+    <!-- Styles aus /resources/css -->
+    <h:outputStylesheet library="css" name="globals.css"/>
+    <h:outputStylesheet library="css" name="styles.css"/>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/img/favicon.ico"/>
+</h:head>
+
+<h:body>
+
+    <p:messages id="msgs" closable="true" showDetail="true" />
+
+    <!-- Formular: neues Geisternetz melden -->
+    <h:form id="meldeForm">
+        <p:inputNumber value="#{geisternetzController.breitengrad}" decimalPlaces="6" placeholder="Breite"/>
+        <p:inputNumber value="#{geisternetzController.laengengrad}" decimalPlaces="6" placeholder="Länge"/>
+        <p:inputNumber value="#{geisternetzController.geschaetzteGroesse}" decimalPlaces="2" placeholder="Größe (m²)"/>
+        <p:inputTextarea value="#{geisternetzController.beschreibung}" rows="3" placeholder="Beschreibung"/>
+        <p:inputNumber value="#{geisternetzController.berichtendePersonId}" placeholder="ID meldende Person"/>
+
+        <!-- Wichtig: wir updaten nur die Liste und (optional) die Messages -->
+        <p:commandButton value="Geisternetz melden"
+                         action="#{geisternetzController.meldeGeisternetz}"
+                         update=":msgs :listForm :verschollenForm"/>
+    </h:form>
+
+    <!-- Liste: noch zu bergende Netze (eigene Form!) -->
+    <h:form id="listForm">
+        <h:panelGroup id="nochZuBergen">
+            <h3>Noch zu bergen</h3>
+
+            <ui:repeat value="#{geisternetzController.nochZuBergen}" var="g">
+                <p>##{g.id} – #{g.status} – (#{g.standort.latitude}, #{g.standort.longitude})</p>
+
+                <p:inputNumber value="#{geisternetzController.bergendePersonId}" placeholder="ID bergende Person"/>
+
+                <p:commandButton value="Eintragen"
+                                 action="#{geisternetzController.eintragenZurBergung(g.id)}"
+                                 update=":msgs :listForm"/>
+
+                <p:commandButton value="Als geborgen melden"
+                                 action="#{geisternetzController.alsGeborgenMelden(g.id)}"
+                                 update=":msgs :listForm"/>
+                <hr/>
+            </ui:repeat>
+        </h:panelGroup>
+    </h:form>
+
+    <!-- Formular: als verschollen melden -->
+    <h:form id="verschollenForm">
+        <h3>Als verschollen melden (nicht anonym!)</h3>
+        <p:inputNumber value="#{geisternetzController.beliebigePersonId}" placeholder="ID meldende (nicht anonyme) Person"/>
+        <p:inputNumber value="#{geisternetzController.selectedGeisternetzId}" placeholder="ID Geisternetz"/>
+
+        <p:commandButton value="Verschollen"
+                         action="#{geisternetzController.alsVerschollenMelden(geisternetzController.selectedGeisternetzId)}"
+                         update=":msgs :listForm :verschollenForm"/>
+    </h:form>
+
 </h:body>
 </html>

@@ -13,9 +13,10 @@ public class GpsKoordinate {
 	}
 
 	public GpsKoordinate(double breitengrad, double laengengrad) {
-		this.laengengrad = breitengrad;
-		this.laengengrad = laengengrad;
+	    this.breitengrad = breitengrad;
+	    this.laengengrad = laengengrad;
 	}
+
 	
 	// Getter- und Setter-Methoden
 

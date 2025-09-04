@@ -1,30 +1,42 @@
 package entities;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 public class Geisternetz {
-	
-	// Attribute
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@Embedded
-	private GpsKoordinate standort;
-	private double geschaetzeGroesse;
 
-	private GeisternetzStatus status;
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date berichtsDatum;
-	private Date letzteStatusVeränderung;
-	
-	// A ghost net may have an assigned recovering person (max one)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Embedded
+    private GpsKoordinate standort;
+
+    private double geschaetzeGroesse;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GeisternetzStatus status;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date berichtsDatum;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "letzte_statusveraenderung") // vermeidet Probleme mit Umlauten
+    private Date letzteStatusVeränderung;
+
+    @ManyToOne
+    @JoinColumn(name = "berichtende_person_id", nullable = false)
+    private BerichtendePerson berichtendePerson;
+
     @ManyToOne
     @JoinColumn(name = "bergende_person_id")
     private BergendePerson bergendePerson;
+
+    // OPTIONAL: falls du im Formular eine Beschreibung erfasst
+    @Column(length = 1000)
+    private String beschreibung;
 
     public Geisternetz() {
         this.berichtsDatum = new Date();
@@ -37,45 +49,30 @@ public class Geisternetz {
         this.berichtsDatum = new Date();
     }
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
+    // --- Getter/Setter ---
+    public Long getId() { return id; }
 
-    public GpsKoordinate getStandort() {
-        return standort;
-    }
-   
-    public void setStandort(GpsKoordinate standort) {
-        this.standort = standort;
-    }
+    public GpsKoordinate getStandort() { return standort; }
+    public void setStandort(GpsKoordinate standort) { this.standort = standort; }
 
-    public double getGeschaetzteGroesse() {
-        return geschaetzeGroesse;
-    }
+    public double getGeschaetzteGroesse() { return geschaetzeGroesse; }
+    public void setGeschaetzeGroesse(double geschaetzeGroesse) { this.geschaetzeGroesse = geschaetzeGroesse; }
 
-    public void setGeschaetzeGroesse(double geschaetzeGroesse) {
-        this.geschaetzeGroesse = geschaetzeGroesse;
-    }
+    public GeisternetzStatus getStatus() { return status; }
+    public void setStatus(GeisternetzStatus status) { this.status = status; }
 
-    public GeisternetzStatus getStatus() {
-        return status;
-    }
+    public Date getBerichtsdatum() { return berichtsDatum; }
+    public void setBerichtsdatum(Date d) { this.berichtsDatum = d; }
 
-    public void setStatus(GeisternetzStatus status) {
-        this.status = status;
-    }
+    public Date getLetzteStatusVeränderung() { return letzteStatusVeränderung; }
+    public void setLetzteStatusVeränderung(Date d) { this.letzteStatusVeränderung = d; }
 
-    public Date getBerichtsdatum() {
-        return berichtsDatum;
-    }
+    public BerichtendePerson getBerichtendePerson() { return berichtendePerson; }
+    public void setBerichtendePerson(BerichtendePerson berichtendePerson) { this.berichtendePerson = berichtendePerson; }
 
-    public BergendePerson getBergendePerson() {
-        return bergendePerson;
-    }
+    public BergendePerson getBergendePerson() { return bergendePerson; }
+    public void setBergendePerson(BergendePerson bergendePerson) { this.bergendePerson = bergendePerson; }
 
-    public void setBergendePerson(BergendePerson bergendePerson) {
-        this.bergendePerson = bergendePerson;
-    }
-	
+    public String getBeschreibung() { return beschreibung; }
+    public void setBeschreibung(String beschreibung) { this.beschreibung = beschreibung; }
 }
