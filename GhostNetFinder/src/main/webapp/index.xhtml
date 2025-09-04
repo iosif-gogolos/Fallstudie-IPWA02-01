@@ -1,71 +1,114 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jakarta.ee/jsf/html"
-      xmlns:f="http://xmlns.jakarta.ee/jsf/core"
-      xmlns:ui="http://xmlns.jakarta.ee/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Geisternetzerfassung</title>
+        <h:outputStylesheet name="globals.css" library="css" />
+        <h:outputStylesheet name="styles.css" library="css" />
+        <style>
+            .has-bg {
+                background: url("#{resource['images:background.jpg']}") no-repeat center center fixed;
+                background-size: cover;
+            }
+        </style>
+    </h:head>
+    <h:body styleClass="has-bg">
+        <!-- Panel 1: Meldeformular -->
+        <h:form id="reportForm">
+            <p:panel header="Geisternetz melden">
+                <h:panelGrid columns="2" styleClass="form-grid" columnClasses="label-column,value-column">
+                    <h:outputLabel for="breitengrad" value="Breitengrad:" />
+                    <p:inputText id="breitengrad" value="#{geisternetzController.breitengrad}" required="true" label="Breitengrad" />
 
-<h:head>
-    <title>GhostNetFinder</title>
+                    <h:outputLabel for="laengengrad" value="Längengrad:" />
+                    <p:inputText id="laengengrad" value="#{geisternetzController.laengengrad}" required="true" label="Längengrad" />
 
-    <!-- Styles aus /resources/css -->
-    <h:outputStylesheet library="css" name="globals.css"/>
-    <h:outputStylesheet library="css" name="styles.css"/>
+                    <h:outputLabel for="groesse" value="Geschätzte Größe:" />
+                    <p:inputText id="groesse" value="#{geisternetzController.geschaetzteGroesse}" required="true" label="Geschätzte Größe" />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/img/favicon.ico"/>
-</h:head>
+                    <h:outputLabel for="beschreibung" value="Beschreibung:" />
+                    <p:inputTextarea id="beschreibung" value="#{geisternetzController.beschreibung}" autoResize="false" rows="3" cols="30" />
 
-<h:body>
+                    <h:outputLabel for="melder" value="ID der meldenden Person:" />
+                    <p:inputText id="melder" value="#{geisternetzController.berichtendePersonId}" required="true" label="Meldende Person" />
+                </h:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="Melden" icon="pi pi-check"
+                                     action="#{geisternetzController.meldeGeisternetz()}"
+                                     process="@form" update=":listForm" />
+                </f:facet>
+            </p:panel>
+        </h:form>
 
-    <p:messages id="msgs" closable="true" showDetail="true" />
+        <!-- Panel 2: Tabelle aller Geisternetze mit Aktionen -->
+        <h:form id="listForm">
+            <p:panel header="Alle Geisternetze">
+                <!-- Eingabefelder für Aktionen -->
+                <h:panelGrid columns="4" styleClass="action-inputs"
+                             columnClasses="label-column,value-column,label-column,value-column">
+                    <h:outputLabel for="bergendePerson" value="Bergende Person ID:" />
+                    <p:inputText id="bergendePerson" value="#{geisternetzController.bergendePersonId}" />
 
-    <!-- Formular: neues Geisternetz melden -->
-    <h:form id="meldeForm">
-        <p:inputNumber value="#{geisternetzController.breitengrad}" decimalPlaces="6" placeholder="Breite"/>
-        <p:inputNumber value="#{geisternetzController.laengengrad}" decimalPlaces="6" placeholder="Länge"/>
-        <p:inputNumber value="#{geisternetzController.geschaetzteGroesse}" decimalPlaces="2" placeholder="Größe (m²)"/>
-        <p:inputTextarea value="#{geisternetzController.beschreibung}" rows="3" placeholder="Beschreibung"/>
-        <p:inputNumber value="#{geisternetzController.berichtendePersonId}" placeholder="ID meldende Person"/>
+                    <h:outputLabel for="personId" value="Person ID:" />
+                    <p:inputText id="personId" value="#{geisternetzController.beliebigePersonId}" />
+                </h:panelGrid>
 
-        <!-- Wichtig: wir updaten nur die Liste und (optional) die Messages -->
-        <p:commandButton value="Geisternetz melden"
-                         action="#{geisternetzController.meldeGeisternetz}"
-                         update=":msgs :listForm :verschollenForm"/>
-    </h:form>
+                <p:dataTable id="netsTable" var="netz" value="#{geisternetzController.alle}"
+                             emptyMessage="Keine Geisternetze vorhanden."
+                             responsiveLayout="scroll">
+                    <p:column headerText="ID">
+                        <h:outputText value="#{netz.id}" />
+                    </p:column>
+                    <p:column headerText="Breitengrad">
+                        <h:outputText value="#{netz.breitengrad}" />
+                    </p:column>
+                    <p:column headerText="Längengrad">
+                        <h:outputText value="#{netz.laengengrad}" />
+                    </p:column>
+                    <p:column headerText="Größe (geschätzt)">
+                        <h:outputText value="#{netz.geschaetzteGroesse}" />
+                    </p:column>
+                    <p:column headerText="Beschreibung">
+                        <h:outputText value="#{netz.beschreibung}" />
+                    </p:column>
+                    <p:column headerText="Meldender (ID)">
+                        <h:outputText value="#{netz.berichtendePersonId}" />
+                    </p:column>
+                    <!-- Optional: Falls vorhanden, hier Bergende Person oder Status anzeigen
+                    <p:column headerText="Bergende Person (ID)">
+                        <h:outputText value="#{netz.bergendePersonId}" />
+                    </p:column>
+                    -->
+                    <p:column headerText="Aktionen">
+                        <p:commandButton value="Zur Bergung eintragen" icon="pi pi-flag"
+                                         action="#{geisternetzController.eintragenZurBergung(netz.id)}"
+                                         process="@this bergendePerson" update="@form"
+                                         style="margin-right:5px;"
+                                         title="Netz für Bergung vormerken" />
+                        <p:commandButton value="Als geborgen melden" icon="pi pi-check-square"
+                                         action="#{geisternetzController.alsGeborgenMelden(netz.id)}"
+                                         process="@this personId" update="@form"
+                                         style="margin-right:5px;"
+                                         title="Netz als geborgen markieren" />
+                        <p:commandButton value="Als verschollen melden" icon="pi pi-exclamation-triangle"
+                                         action="#{geisternetzController.alsVerschollenMelden(netz.id)}"
+                                         process="@this personId" update="@form"
+                                         title="Netz als verschollen markieren" />
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
 
-    <!-- Liste: noch zu bergende Netze (eigene Form!) -->
-    <h:form id="listForm">
-        <h:panelGroup id="nochZuBergen">
-            <h3>Noch zu bergen</h3>
-
-            <ui:repeat value="#{geisternetzController.nochZuBergen}" var="g">
-                <p>##{g.id} – #{g.status} – (#{g.standort.latitude}, #{g.standort.longitude})</p>
-
-                <p:inputNumber value="#{geisternetzController.bergendePersonId}" placeholder="ID bergende Person"/>
-
-                <p:commandButton value="Eintragen"
-                                 action="#{geisternetzController.eintragenZurBergung(g.id)}"
-                                 update=":msgs :listForm"/>
-
-                <p:commandButton value="Als geborgen melden"
-                                 action="#{geisternetzController.alsGeborgenMelden(g.id)}"
-                                 update=":msgs :listForm"/>
-                <hr/>
-            </ui:repeat>
-        </h:panelGroup>
-    </h:form>
-
-    <!-- Formular: als verschollen melden -->
-    <h:form id="verschollenForm">
-        <h3>Als verschollen melden (nicht anonym!)</h3>
-        <p:inputNumber value="#{geisternetzController.beliebigePersonId}" placeholder="ID meldende (nicht anonyme) Person"/>
-        <p:inputNumber value="#{geisternetzController.selectedGeisternetzId}" placeholder="ID Geisternetz"/>
-
-        <p:commandButton value="Verschollen"
-                         action="#{geisternetzController.alsVerschollenMelden(geisternetzController.selectedGeisternetzId)}"
-                         update=":msgs :listForm :verschollenForm"/>
-    </h:form>
-
-</h:body>
+            <!-- Panel 3: Karte mit Markern (optional) -->
+            <script type="text/javascript"
+                    src="https://maps.google.com/maps/api/js?key=IHRE_API_KEY&amp;sensor=false"></script>
+            <p:panel header="Karte" rendered="#{not empty geisternetzController.alle}">
+                <p:gmap id="map" center="0,0" zoom="2" type="ROADMAP"
+                        model="#{addMarkersView.emptyModel}"
+                        style="width:100%;height:400px" />
+            </p:panel>
+        </h:form>
+    </h:body>
 </html>

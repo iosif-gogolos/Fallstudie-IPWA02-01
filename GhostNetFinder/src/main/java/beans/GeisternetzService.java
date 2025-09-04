@@ -133,4 +133,5 @@ public class GeisternetzService {
     public List<Geisternetz> findAll() {
         return em.createQuery("select g from Geisternetz g", Geisternetz.class).getResultList();
     }
+    
 }

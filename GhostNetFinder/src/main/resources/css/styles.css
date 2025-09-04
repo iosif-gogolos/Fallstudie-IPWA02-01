@@ -9,64 +9,60 @@
     --background: #717978;
 }
 
+/* Only set background on body, not every element */
+html, body {
+    height: 100%;
+}
+body {
+    margin: 0;
+    background-color: var(--background);
+    font-family: Mulish, Arial, sans-serif;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: var(--background);
-    font-family: Mulish;
 }
 
 .centering {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    justify-content: flex-start;
+    min-height: 100vh;
     width: 100vw;
+    padding: 24px 12px;
     position: relative;
 }
 
 .my-form {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 16px;
-    background-color: var(--background);
+    background-color: rgba(255,255,255,0.06);
     border: 1px solid var(--primary);
     border-radius: 16px;
     box-shadow: 0 20px 60px var(--aura);
     min-width: 280px;
-    max-width: 460px;
+    max-width: 1000px;
     width: 100%;
-    padding: 32px;
+    padding: 24px;
+    backdrop-filter: blur(2px);
 }
 
 .my-form__actions {
     display: flex;
     justify-content: flex-end;
     color: var(--secondary);
-    gap: 16px;
+    gap: 12px;
     margin-top: 8px;
-}
-
-.my-form__actions a {
-    color: var(--secondary);
-    font-weight: 600;
-}
-
-.my-form__actions a:hover {
-    color: #a7a2cb;
 }
 
 .my-form__row {
     display: flex;
-    justify-content: space-between;
-}
-
-.my-form__signup {
-    display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .my-form__signup a {
@@ -78,16 +74,4 @@
 
 .my-form__signup a:hover {
     color: var(--primary-hover);
-}
-
-.background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-image: url(Bild-Bert1.png);
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: -1;
 }
