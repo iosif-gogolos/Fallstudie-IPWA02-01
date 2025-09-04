@@ -1,6 +1,6 @@
 #FileLock
-#Thu Sep 04 11:43:32 CEST 2025
-hostName=macbookpro.home
-id=199141c21af072a4b6ef8de6f627a65e4e14d686106
+#Thu Sep 04 19:01:49 CEST 2025
+hostName=localhost
+id=19915ad656816e4a89ae843b3e7f4c339a3a59976dc
 method=file
-server=192.168.2.14\:49545
+server=localhost\:54524
